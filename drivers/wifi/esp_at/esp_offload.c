@@ -51,10 +51,15 @@ static int _sock_connect(struct esp_data *dev, struct esp_socket *sock)
 			 sock->link_id, addr_str,
 			 ntohs(net_sin(&dst)->sin_port));
 	} else {
+		if (ntohs(net_sin(&dst)->sin_port) == 0) {
+			return 0;
+		}
+
 		snprintk(connect_msg, sizeof(connect_msg),
-			 "AT+CIPSTART=%d,\"UDP\",\"%s\",%d,%d",
-			 sock->link_id, addr_str,
-			 ntohs(net_sin(&dst)->sin_port), ntohs(net_sin(&dst)->sin_port));
+			"AT+CIPSTART=%d,\"UDP\",\"%s\",%d,%d",
+			sock->link_id, addr_str,
+			ntohs(net_sin(&dst)->sin_port),
+			ntohs(net_sin(&dst)->sin_port));
 	}
 
 	LOG_DBG("link %d, ip_proto %s, addr %s", sock->link_id,
